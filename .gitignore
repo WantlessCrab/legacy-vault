@@ -1,0 +1,24 @@
+# Python Virtual Environment
+venv/
+*.venv/
+
+# Large downloaded model files
+model/
+models/
+
+# IDE settings
+.idea/
+.vscode/
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
