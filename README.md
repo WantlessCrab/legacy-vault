@@ -31,3 +31,39 @@ All development must strictly adhere to the following foundational principles:
 This project is structured as a **monorepo**. All code, including distinct applications and services, will reside in this single Git repository.
 
 Environment and dependency management is handled via **Docker**. Each independent service (e.g., the FastAPI server, the TTS application) will have its own `Dockerfile` to ensure a reproducible and isolated environment. Detailed setup instructions will be located in the directory for each respective service.
+
+## External Dependency Directory 
+*Building lists as development occurs*
+
+### Core Project Tech Stack (The "Workshop Tools")
+*Principle: "Most restrictive first" determines the baseline.*
+
+* `git`: For version control.
+* `pyenv 2.6.10`: To manage Python versions on the host.
+* `python 3.11.9`: The baseline Python version for creating environments.
+* `docker` & `docker-compose`: For containerization and orchestration.
+* `nvm` (*to be added*): To manage the Node.js host environment for the UI.
+
+### Docker-Containerized Tech Stacks (The "Finished Products")
+*List of self-contained, service-specific Docker Image Bake-in.*
+
+* **tts_service**
+    * **Base Image:** `rocm/pytorch:rocm6.1.1-runtime-pytorch2.2.1-py3.11`
+    * **System Dependencies (apt):** These are installed via the `Dockerfile`.
+        * `ffmpeg`
+        * `espeak-ng`
+        * `libsndfile1-dev`
+    * **Python Dependencies (pip):** The full list is maintained in `tts_service/requirements.txt`. Key libraries include:
+        * `TTS` (the core Coqui TTS engine)
+        * `PyMuPDF` (for PDF parsing)
+        * `numpy`, `scipy`, `librosa` (for audio & data processing)
+        * `coqpit` (for model configuration)
+    * **Special Python Dependencies (pip):** These are installed via a separate command in the `Dockerfile` to ensure GPU compatibility.
+        * `torch`
+        * `torchaudio`
+
+### Runtime Environment (The "Plug-in Assets")
+*Assets that are provided to a running container via Docker Volumes, not baked into the image.*
+
+* **Coqui TTS AI Models:** The large, pre-trained model files.
+* **User's Local PDFs:** The directory on the host machine containing the documents to be read.
