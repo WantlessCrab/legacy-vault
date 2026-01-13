@@ -1,0 +1,77 @@
+# Video Processor Module (`vid_processor`) README
+
+This module is a self-contained "hub" for downloading and processing video/audio files to generate high-fidelity transcripts.
+
+It contains all necessary tools, including `yt-dlp` (for downloading) and `openai-whisper` (for transcription).
+
+## Prerequisites
+
+1.  A clean Ubuntu (WSL2) terminal is open.
+2.  You have already completed the one-time setup of this hub, meaning:
+    * `ffmpeg` is installed (`sudo apt install ffmpeg`).
+    * `yt-dlp` exists in the `vid_processor` directory.
+    * The `stt_env` virtual environment exists and has `openai-whisper` installed in it.
+
+---
+
+## Standard Workflow: From Video to Transcript
+
+Follow these steps each time you want to process a new video.
+
+### Step 1: Navigate to the Hub Directory
+
+First, change your location to the `vid_processor` hub.
+
+`cd /home/wantless/code/ProjectRebuild/vid_processor`
+
+### Step 2: Activate the Virtual Environment
+
+You must "enter" the `stt_env` "clean room" to access the `whisper` command. Your terminal prompt will change to show `(stt_env)`.
+
+`source stt_env/bin/activate`
+
+### Step 3: Download the Video
+
+Use the `yt-dlp` tool to download your target video. The `-o` flag specifies the output path.
+
+* **Action:** Download a video.
+* **Command Structure:**
+    `./yt-dlp -o "output/[YOUR_FILENAME].mp4" "[PASTE_THE_VIDEO_PAGE_URL_HERE]"`
+* **Example:**
+    `./yt-dlp -o "output/chinese_dev_guide.mp4" "https://www.bilibili.com/video/BV1PAeqz1E7q/"`
+* **Result:** A new `.mp4` file will be saved in your `vid_processor/output` folder.
+
+### Step 4: Generate Transcripts (Choose one)
+
+Use the `whisper` command to process the video file you just downloaded.
+
+* **`[VIDEO_FILE_PATH]`**: `output/chinese_dev_guide.mp4`
+* **`[TRANSCRIPT_DIR]`**: `transcript_output`
+
+#### Task A: Generate the Original Language Transcript
+
+This command creates a "max fidelity" transcript in the video's original language (e.g., Chinese).
+
+* **Action:** Transcribe.
+* **Command Structure:**
+    `whisper "[VIDEO_FILE_PATH]" --model large --device cpu --output_dir "[TRANSCRIPT_DIR]"`
+* **Example:**
+    `whisper "output/chinese_dev_guide.mp4" --model large --device cpu --output_dir "transcript_output"`
+
+#### Task B: Generate a Translated (English) Transcript
+
+This command *also* creates a transcript, but it translates the content directly into English.
+
+* **Action:** Transcribe **and** Translate.
+* **Command Structure:**
+    `whisper "[VIDEO_FILE_PATH]" --task translate --model large --device cpu --output_dir "[TRANSCRIPT_DIR]"`
+* **Example:**
+    `whisper "output/chinese_dev_guide.mp4" --task translate --model large --device cpu --output_dir "transcript_output"`
+
+* **Result:** New transcript files (e.g., `.txt`, `.srt`, `.vtt`) will be saved in your `vid_processor/transcript_output` folder.
+
+### Step 5: Deactivate the Environment (When Finished)
+
+When you are done processing videos, you can "leave" the "clean room."
+
+`deactivate`
